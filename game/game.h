@@ -27,7 +27,7 @@ struct GT
 
 extern GT *game_constructor(void);
 extern void game_init(void);
-extern void game_reset(void);
+extern void game_reset(GT *);
 extern void display(void);
 extern void keyboard(unsigned char key, int x, int y);
 extern void special(int key, int x, int y);

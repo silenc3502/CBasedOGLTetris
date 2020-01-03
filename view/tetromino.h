@@ -33,8 +33,8 @@ struct TT {
     double interval;
 };
 
-TT *tetromino_constructor(void);
-void tetromino_reset(TT *);
+extern TT *tetromino_constructor(void);
+extern void tetromino_reset(TT *);
 
 #undef TT
 #undef GT

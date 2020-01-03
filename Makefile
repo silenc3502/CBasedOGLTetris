@@ -2,8 +2,9 @@ game		:=	game
 presenter	:=	presenter
 view		:=	view
 math		:=	math
+shader		:=	shader
 
-modules		:=	$(game) $(presenter) $(view) $(math)
+modules		:=	$(shader) $(game) $(presenter) $(view) $(math)
 
 cores		:=	main
 

@@ -5,37 +5,48 @@
 #include "game.h"
 #include "board.h"
 #include "tetromino.h"
+#include "constants.h"
 #include <sys/time.h>
 #include <stdbool.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <GL/glut.h>
 
-typedef struct timeval tv;
+#define GT Game_T
+typedef struct GT GT;
 
-game *game_constructor(void) {
-    game *tmp = (game *)malloc(sizeof(game));
+#define TT Tetro_T
+typedef struct TT TT;
+
+#define BT Board_T
+typedef struct BT BT;
+
+//typedef struct timeval tv;
+
+GT *game_constructor(void) {
+    GT *tmp = (GT *)malloc(sizeof(T));
     return tmp;
 }
 
-void game_run(game *this, int argc, char **argv) {
+void game_run(GT *this, int argc, char **argv) {
     this->singleton = this;
 
-    tv t;
+    struct timeval t;
     gettimeofday(&t, NULL);
     srand((unsigned)(t.tv_sec * 1000 + t.tv_usec));
 
-    this->tetro.game_app = this;
-    this->tetro.game_board = &(this->game_board);
+    this->tetro->game_app = this;
+    //this->tetro->game_board = &(this->game_board);
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
-    glutInitWindowSize(340, 600);
+    glutInitWindowSize(600, 800);
     glutCreateWindow("coglTetris");
 
 #if 0
-    reset();
-    init();
+    game_reset();
+    game_init();
+
 
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
@@ -44,4 +55,15 @@ void game_run(game *this, int argc, char **argv) {
 #endif
 
     glutMainLoop();
+}
+
+void game_reset(void)
+{
+    TT *t = tetromino_constructor();
+    //t->interval = DefaultInterval;
+    t->interval = DEFAULTINTERVAL;
+    tetromino_reset(t);
+}
+
+void game_init(void) {
 }

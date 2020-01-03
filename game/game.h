@@ -8,24 +8,36 @@
 #include "tetromino.h"
 #include "board.h"
 
-typedef struct _game game;
-struct _game
+#define GT Game_T
+typedef struct GT GT;
+
+#define TT Tetro_T
+typedef struct TT TT;
+
+#define BT Board_T
+typedef struct BT BT;
+
+struct GT
 {
     int is_game_over;
-    tetromino tetro;
-    board game_board;
-    struct _game *singleton;
+    TT *tetro;
+    BT *game_board;
+    GT *singleton;
 };
 
-game *game_constructor(void);
-void game_init(void);
-void game_reset(void);
-void display(void);
-void keyboard(unsigned char key, int x, int y);
-void special(int key, int x, int y);
-void idle(void);
+extern GT *game_constructor(void);
+extern void game_init(void);
+extern void game_reset(void);
+extern void display(void);
+extern void keyboard(unsigned char key, int x, int y);
+extern void special(int key, int x, int y);
+extern void idle(void);
 
-void game_over(void);
-void run(int argc, char **argv);
+extern void game_over(void);
+extern void game_run(GT *, int argc, char **argv);
+
+#undef GT
+#undef TT
+#undef BT
 
 #endif //CBASEDOGLTETRIS_GAME_H

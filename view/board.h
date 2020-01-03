@@ -7,8 +7,10 @@
 
 #include <stdbool.h>
 
-typedef struct _board board;
-struct _board
+#define BT Board_T
+typedef struct BT BT;
+
+struct BT
 {
     int blocks[20][10];
     int num_of_points;

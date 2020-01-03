@@ -6,15 +6,38 @@
 #define CBASEDOGLTETRIS_TETROMINO_H
 
 #include "game.h"
+#include <stdbool.h>
+#include <sys/time.h>
 
 enum Shape {O, I, S, Z, L, J, T, NUM_OF_SHAPES};
 
-typedef struct _tetromino tetromino;
-struct _tetromino {
+#define GT Game_T
+typedef struct GT GT;
+
+#define TT Tetro_T
+typedef struct TT TT;
+
+#define BT Board_T
+typedef struct BT BT;
+
+struct TT {
+    struct timeval start_time;
     int cur_x;
-    struct _game *game_app;
-    struct _board *game_board;
+    int step_extra;
+    int rotation_count;
+    enum Shape shape;
+    bool blocks[4][4];
+    int color_id;
+    GT *game_app;
+    BT *game_board;
     double interval;
 };
+
+TT *tetromino_constructor(void);
+void tetromino_reset(TT *);
+
+#undef TT
+#undef GT
+#undef BT
 
 #endif //CBASEDOGLTETRIS_TETROMINO_H

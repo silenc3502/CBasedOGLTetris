@@ -1,8 +1,9 @@
 game		:=	game
 presenter	:=	presenter
 view		:=	view
+math		:=	math
 
-modules		:=	$(game) $(presenter) $(view)
+modules		:=	$(game) $(presenter) $(view) $(math)
 
 cores		:=	main
 

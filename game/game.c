@@ -22,6 +22,8 @@
 
 #include "initglsl.h"
 
+#include <GL/glext.h>
+
 #define TWO_POINTER_SIZE        (16)
 
 #define GT Game_T
@@ -46,20 +48,21 @@ GT *ctx;
 GT *game_constructor(void) {
     ctx = (GT *)malloc(sizeof(GT));
     ctx->singleton = (GT *)malloc(sizeof(GT));
+    ctx->tetro = (TT *)malloc(sizeof(TT));
+    ctx->game_board = (BT *)malloc(sizeof(BT));
 
     return ctx;
 }
 
 void game_run(GT *this, int argc, char **argv) {
     this->singleton = this;
-    ctx->is_game_over = 1;
 
     struct timeval t;
     gettimeofday(&t, NULL);
     srand((unsigned)(t.tv_sec * 1000 + t.tv_usec));
 
-    //this->tetro->game_app = this;
-    //this->tetro->game_board = &(this->game_board);
+    this->tetro->game_app = this;
+    this->tetro->game_board = this->game_board;
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
@@ -71,22 +74,23 @@ void game_run(GT *this, int argc, char **argv) {
     game_init();
 
     glutDisplayFunc(display);
-#if 0
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(special);
     glutIdleFunc(idle);
-#endif
 
     glutMainLoop();
 }
 
 void game_reset(GT *this)
 {
-    TT *t = tetromino_constructor();
+    //TT *t = tetromino_constructor();
     //t->interval = DefaultInterval;
-    t->interval = DEFAULTINTERVAL;
-    tetromino_reset(t);
-    this->is_game_over = 0;
+    this->tetro->interval = DEFAULTINTERVAL;
+    //t->interval = DEFAULTINTERVAL;
+    printf("tetro reset\n");
+    tetromino_reset(this->tetro);
+    reset_board(this->game_board);
+    this->is_game_over = false;
 }
 
 struct point_2d
@@ -112,19 +116,19 @@ void game_init(void) {
     {
         points[i * 2    ] = cvector2_constructor(-W, -H + BLOCK_H * i);
         points[i * 2 + 1] = cvector2_constructor( W, -H + BLOCK_H * i);
-        p[i * 2    ].x = points[i * 2    ]->x;
-        p[i * 2    ].y = points[i * 2    ]->y;
-        p[i * 2 + 1].x = points[i * 2 + 1]->x;
-        p[i * 2 + 1].y = points[i * 2 + 1]->y;
+        p[i * 2    ].x = -W;
+        p[i * 2    ].y = -H + BLOCK_H * i;
+        p[i * 2 + 1].x = W;
+        p[i * 2 + 1].y = -H + BLOCK_H * i;
     }
     for(i = 0; i < NUMOFVLINES; i++)
     {
         points[NUMOFHPOINTS + i * 2    ] = cvector2_constructor(-W + BLOCK_W * i, -H);
         points[NUMOFHPOINTS + i * 2 + 1] = cvector2_constructor(-W + BLOCK_W * i,  H);
-        p[NUMOFHPOINTS + i * 2    ].x = points[NUMOFHPOINTS + i * 2    ]->x;
-        p[NUMOFHPOINTS + i * 2    ].y = points[NUMOFHPOINTS + i * 2    ]->y;
-        p[NUMOFHPOINTS + i * 2 + 1].x = points[NUMOFHPOINTS + i * 2 + 1]->x;
-        p[NUMOFHPOINTS + i * 2 + 1].y = points[NUMOFHPOINTS + i * 2 + 1]->y;
+        p[NUMOFHPOINTS + i * 2    ].x = -W + BLOCK_W * i;
+        p[NUMOFHPOINTS + i * 2    ].y = -H;
+        p[NUMOFHPOINTS + i * 2 + 1].x = -W + BLOCK_W * i;
+        p[NUMOFHPOINTS + i * 2 + 1].y = H;
     }
 
     CV4T *colors[TOTALPOINTS];
@@ -172,20 +176,19 @@ void game_init(void) {
     glEnableVertexAttribArray(vColor);
     glVertexAttribPointer(vColor, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(COLORSOFFSET));
 
-    //glClearColor(1.0, 1.0, 1.0, 1.0);
-    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glClearColor(1.0, 1.0, 1.0, 1.0);
+    //glClearColor(0.0, 0.0, 0.0, 1.0);
 }
 
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    printf("ctx = 0x%x\n", ctx);
-    printf("ctx->is_game_over = %d\n", ctx->is_game_over);
+    //printf("ctx->is_game_over = %d\n", ctx->is_game_over);
 
     if(ctx->is_game_over)
     {
-        printf("game over\n");
+        //printf("game over\n");
         glRasterPos2f(-0.5, 0.1);
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, 'G');
         glRasterPos2f(-0.2, 0.1);
@@ -206,7 +209,9 @@ void display(void)
     }
     else
     {
-        //tetro_write_buffer();
+        //printf("tetro_write_buffer\n");
+        tetro_write_buffer(ctx->tetro);
+        board_write_buffer(ctx->game_board);
 
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -221,9 +226,63 @@ void display(void)
         glDrawArrays(GL_TRIANGLE_STRIP, BEGINTETROMINOPOINTS, NUMOFTETROMINOPOINTS);
 
         // draw bottom blocks
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        //glDrawArrays(GL_TRIANGLE_STRIP, kBeginBoardPoints, singleton->board.num_of_points);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glDrawArrays(GL_TRIANGLE_STRIP, BEGINBOARDPOINTS, ctx->game_board->num_of_points);
     }
 
     glutSwapBuffers();
+}
+
+void game_over(GT *game)
+{
+    game->is_game_over = true;
+}
+
+void keyboard(unsigned char key, int x, int y)
+{
+    switch(key)
+    {
+        case GLUT_KEY_LEFT:
+            //ctx->tetro->left();
+            tetro_left(ctx->tetro);
+            break;
+        case GLUT_KEY_RIGHT:
+            //ctx->tetro->right();
+            tetro_right(ctx->tetro);
+            break;
+        case GLUT_KEY_UP:
+            //ctx->tetro->rotate();
+            tetro_rotate(ctx->tetro);
+            break;
+        case GLUT_KEY_DOWN:
+            //ctx->tetro->down();
+            tetro_down(ctx->tetro);
+            break;
+        case 'w':
+        case 'W':
+            //ctx->tetro->up();
+            tetro_up(ctx->tetro);
+            break;
+        case 'r':
+        case 'R':
+            game_reset(ctx);
+            break;
+        case 'q':
+        case 'Q':
+        case KEYCODEESC:
+        case KEYCODEESC2:
+            exit(EXIT_SUCCESS);
+            break;
+    }
+}
+
+void special(int key, int x, int y)
+{
+    keyboard(key, x, y);
+}
+
+void idle(void)
+{
+    usleep(20);
+    glutPostRedisplay();
 }

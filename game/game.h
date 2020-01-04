@@ -5,6 +5,8 @@
 #ifndef CBASEDOGLTETRIS_GAME_H
 #define CBASEDOGLTETRIS_GAME_H
 
+#include <stdbool.h>
+
 #include "tetromino.h"
 #include "board.h"
 
@@ -19,7 +21,7 @@ typedef struct BT BT;
 
 struct GT
 {
-    int is_game_over;
+    bool is_game_over;
     TT *tetro;
     BT *game_board;
     GT *singleton;
@@ -33,7 +35,7 @@ extern void keyboard(unsigned char key, int x, int y);
 extern void special(int key, int x, int y);
 extern void idle(void);
 
-extern void game_over(void);
+extern void game_over(GT *);
 extern void game_run(GT *, int argc, char **argv);
 
 #undef GT

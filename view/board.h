@@ -16,11 +16,20 @@ struct BT
     int num_of_points;
 };
 
-void init_board(void);
-void reset_board(void);
-bool has_collision(bool, int, int);
-bool top_reached(bool, int);
-void add_blocks(bool, int, int, int);
-void write_buffer(void);
+#if 0
+typedef enum {
+    FALSE, TRUE
+}
+bool;
+#endif
+
+extern void init_board(void);
+extern void reset_board(BT *);
+extern bool has_collision(bool[4][4], int, int, BT *);
+extern bool top_reached(bool[4][4], int);
+extern void board_add_blocks(bool[4][4], int, int, int, BT *);
+extern void board_write_buffer(BT *);
+
+#undef BT
 
 #endif //CBASEDOGLTETRIS_BOARD_H

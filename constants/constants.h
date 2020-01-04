@@ -10,6 +10,9 @@
 #define TWO_FLOAT_POINT_SIZE    (8)
 
 #if 1
+#define KEYCODEESC              (33)
+#define KEYCODEESC2             (27)
+
 #define NUMOFHBLOCKS            (20)
 #define NUMOFHLINES             (NUMOFHBLOCKS + 1)
 #define NUMOFVBLOCKS            (10)
@@ -33,11 +36,13 @@
 #define BLOCK_H                 ((H) / (10))
 #define BLOCK_W                 ((W) / (5))
 
-#define NUMOFCOLORS         6
+#define NUMOFCOLORS             (6)
 
-#define INTERVALSPEEDUP     1.1
-#define MINIMUMINTERVAL     100
-#define DEFAULTINTERVAL     623
+#define BLOCKEMPTY              (-1)
+
+#define INTERVALSPEEDUP         (1.1)
+#define MINIMUMINTERVAL         (100)
+#define DEFAULTINTERVAL         (623)
 
 #else
 

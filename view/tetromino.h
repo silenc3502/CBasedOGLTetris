@@ -35,6 +35,10 @@ struct TT {
 
 extern TT *tetromino_constructor(void);
 extern void tetromino_reset(TT *);
+extern double tetro_elapsed(TT *);
+extern int tetro_steps(TT *);
+extern void tetro_write_buffer(TT *);
+extern void tetro_add_blocks(TT *);
 
 #undef TT
 #undef GT

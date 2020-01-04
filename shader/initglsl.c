@@ -40,7 +40,7 @@ char *readShaderSource(const char *shaderFile)
 
     fseek(fp, 0L, SEEK_END);
     long size = ftell(fp);
-    printf("size = %u\n", size);
+    printf("size = %lu\n", size);
 
     fseek(fp, 0L, SEEK_SET);
     char *buf = (char *)malloc(sizeof(char) * size);
